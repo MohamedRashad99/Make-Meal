@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meal_app/provider/meal_provider.dart';
+import 'package:provider/provider.dart';
 import '../models/meal.dart';
 import '../widgets/main_drawer.dart';
 import './categories_screen.dart';
@@ -7,9 +9,7 @@ import './favorite_screen.dart';
 import 'meal_detail_screen.dart';
 
 class TabsScreen extends StatefulWidget {
-  final List<Meal> favoriteMeals;
 
-  TabsScreen(this.favoriteMeals);
 
   @override
   _TabsScreenState createState() => _TabsScreenState();
@@ -21,13 +21,15 @@ class _TabsScreenState extends State<TabsScreen> {
 
   @override
   void initState() {
+    // Not called im main function because this contain an context .
+    Provider.of<MealProvider>(context ,listen: false).getDataBySharedPreference();
     _pages = [
       {
         'page': CategoriesScreen(),
         'title': 'Categories',
       },
       {
-        'page': FavoritesScreen(widget.favoriteMeals),
+        'page': FavoritesScreen(),
         'title': 'Your Favorites',
       },
     ];

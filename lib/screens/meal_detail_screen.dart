@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:meal_app/provider/meal_provider.dart';
+import 'package:provider/provider.dart';
 import '../dummy_data.dart';
 
 class MealDetailScreen extends StatelessWidget {
   static const routeName = 'meal_detail';
-  final Function toggalFavorites;
-  final Function isFavorite;
 
- MealDetailScreen( this.toggalFavorites ,this.isFavorite);
+
 
   Widget buildSelectionTitle(BuildContext ctx, String text) {
     return Container(
@@ -35,6 +35,7 @@ class MealDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     final mealId = ModalRoute.of(context).settings.arguments as String;
     final selectedMeal = DUMMY_MEALS.firstWhere((meal) => meal.id == mealId);
     // if id meal that come from categories meal is equal filtering meal that i has it
@@ -101,9 +102,9 @@ class MealDetailScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         // howa 3waz ydelete item f b3atlo mealId w mealId Gay mn meal item -->
-        onPressed: ()=>toggalFavorites(mealId),
+        onPressed: ()=>Provider.of<MealProvider>(context ,listen: false).toggalFavorites(mealId),
         //star icon هل هو في خانه ال favorites ولا لا
-        child: Icon(isFavorite(mealId)? Icons.star : Icons.star_border ),
+        child: Icon(Provider.of<MealProvider>(context ,listen: true).isFavorites(mealId)? Icons.star : Icons.star_border ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
     );
