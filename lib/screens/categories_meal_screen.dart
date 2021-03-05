@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:meal_app/provider/language_provider.dart';
 import 'package:meal_app/provider/meal_provider.dart';
 import 'package:provider/provider.dart';
 import '../models/category.dart';
@@ -16,8 +17,8 @@ class CategoryMealsScreen extends StatefulWidget {
 }
 
 class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
-  String categoryTitle;
-  List<Meal> displayedMeal;
+String categoryId;
+List<Meal> displayedMeal;
 
 
   //// ------>
@@ -35,7 +36,6 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
     final routeArg =
     ModalRoute.of(context).settings.arguments as Map<String, String>;
     final categoryId = routeArg['id'];
-    categoryTitle = routeArg['title'];
     // to make filtering all object that inside DUMMY_MEALS.
     // then convert to widget.availableMeals to  make filtering all object that inside categories.
     displayedMeal = availableMeals.where((meal) {
@@ -47,23 +47,37 @@ class _CategoryMealsScreenState extends State<CategoryMealsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    var lan = Provider.of<LanguageProvider>(context, listen: true);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(categoryTitle),
-      ),
-      body: ListView.builder(
-        itemBuilder: (ctx, index) {
-          return MealItem(
-            id: displayedMeal[index].id,
-            imageUrl: displayedMeal[index].imageUrl,
-            title: displayedMeal[index].title,
-            duration: displayedMeal[index].duration,
-            affordability: displayedMeal[index].affordability,
-            //removeItem: _removeMeal,
-          );
-        },
-        itemCount: displayedMeal.length,
+    bool isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    var dw = MediaQuery.of(context).size.width;
+
+    return Directionality(
+      textDirection: lan.isEn ? TextDirection.ltr : TextDirection.rtl,
+
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(lan.getTexts('cat-$categoryId')),
+        ),
+        body: GridView.builder(
+          gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+            maxCrossAxisExtent: dw<=400 ? 400:500,
+            childAspectRatio: isLandscape ? dw/(dw*0.8) : dw/(dw*0.75),
+            crossAxisSpacing: 0,
+            mainAxisSpacing: 0,
+          ),
+
+          itemBuilder: (ctx, index) {
+            return MealItem(
+              id: displayedMeal[index].id,
+              imageUrl: displayedMeal[index].imageUrl,
+              duration: displayedMeal[index].duration,
+              affordability: displayedMeal[index].affordability,
+              //removeItem: _removeMeal,
+            );
+          },
+          itemCount: displayedMeal.length,
+        ),
       ),
     );
   }

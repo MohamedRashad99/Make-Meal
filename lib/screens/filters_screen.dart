@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:meal_app/provider/meal_provider.dart';
+import 'package:meal_app/provider/theme_provider.dart';
 import 'package:provider/provider.dart';
 import '../widgets/main_drawer.dart';
 
 class FiltersScreen extends StatefulWidget {
   static const routeName = 'filters';
+  final bool fromOnBoarding;
+
+  FiltersScreen({this.fromOnBoarding = false});
 
   @override
   _FiltersScreenState createState() => _FiltersScreenState();
@@ -19,6 +23,11 @@ class _FiltersScreenState extends State<FiltersScreen> {
       title: Text(title),
       value: currentValue,
       activeColor: Theme.of(context).primaryColor,
+      inactiveTrackColor:
+      Provider.of<ThemeProvider>(context, listen: true).tm ==
+          ThemeMode.light
+          ? null
+          : Colors.black,
       subtitle: Text(description),
       onChanged: updateValue,
     );

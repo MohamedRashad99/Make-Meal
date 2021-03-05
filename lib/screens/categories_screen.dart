@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:meal_app/provider/meal_provider.dart';
+import 'package:provider/provider.dart';
 import '../widgets/category_item.dart';
 import '../widgets/main_drawer.dart';
 import '../dummy_data.dart';
@@ -13,11 +15,10 @@ class CategoriesScreen extends StatelessWidget {
       drawer: MainDrawer(),
       body: GridView(
         padding: EdgeInsets.all(16),
-        children: DUMMY_CATEGORIES
+        children: Provider.of<MealProvider>(context).availableCategory
             .map(
               (catData) => CategoryItem(
                 catData.id,
-                catData.title,
                 catData.color,
               ),
             )

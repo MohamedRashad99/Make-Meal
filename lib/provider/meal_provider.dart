@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:meal_app/models/meal.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../models/category.dart';
+import '../models/meal.dart';
 import '../dummy_data.dart';
 
 class MealProvider with ChangeNotifier {
@@ -14,7 +15,10 @@ class MealProvider with ChangeNotifier {
 
   List<Meal> availableMeal = DUMMY_MEALS;
   List<Meal> favoriteMeals = [];
+
   List<String> prefsMealId = [];
+
+  List<Category>availableCategory = [];
 
   void setFilters() async {
     /*يعني لو User فعل filters bottom هيروح يحدث filters من حاله false الي true ويروح بعد كده يعمل check
@@ -39,6 +43,18 @@ class MealProvider with ChangeNotifier {
       ;
       return true;
     }).toList();
+    List<Category> ac = [];
+    availableMeal.forEach((meal) {
+      meal.categories.forEach((carId) {
+        DUMMY_CATEGORIES.forEach((cat) {
+          if(cat.id == carId) {
+            if(!ac.any((cat) => cat.id == carId)) ac.add(cat);
+          }
+        });
+      });
+    });
+    availableCategory = ac;
+
     notifyListeners();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setBool('gluten', filters['gluten']);
