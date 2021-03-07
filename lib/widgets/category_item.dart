@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:meal_app/provider/language_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../provider/language_provider.dart';
 import '../screens/categories_meal_screen.dart';
 
 class CategoryItem extends StatelessWidget {
@@ -36,7 +37,7 @@ class CategoryItem extends StatelessWidget {
           padding: EdgeInsets.all(8),
           child: Text(
             lan.getTexts('cat-$id'),
-            style: Theme.of(context).textTheme.headline1,
+            style: Theme.of(context).textTheme.headline6,
           ),
           decoration: BoxDecoration(
             gradient: LinearGradient(

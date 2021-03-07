@@ -56,16 +56,16 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-     - assets/images/image.jpg
+     - assets/images/
   #   - images/a_dot_ham.jpeg
 
 
   fonts:
    - family: Raleway
      fonts:
+       - asset: assets/fonts/Raleway-Regular.ttf
        - asset: assets/fonts/Raleway-Bold.ttf
          weight: 700
-       - asset: assets/fonts/Raleway-Regular.ttf
        - asset: assets/fonts/Raleway-Black.ttf
          weight: 900
 

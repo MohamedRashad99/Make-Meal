@@ -18,7 +18,7 @@ class MealProvider with ChangeNotifier {
 
   List<String> prefsMealId = [];
 
-  List<Category>availableCategory = [];
+  List<Category> availableCategory = [];
 
   void setFilters() async {
     /*يعني لو User فعل filters bottom هيروح يحدث filters من حاله false الي true ويروح بعد كده يعمل check
@@ -43,12 +43,15 @@ class MealProvider with ChangeNotifier {
       ;
       return true;
     }).toList();
+
+
+
     List<Category> ac = [];
     availableMeal.forEach((meal) {
       meal.categories.forEach((carId) {
         DUMMY_CATEGORIES.forEach((cat) {
-          if(cat.id == carId) {
-            if(!ac.any((cat) => cat.id == carId)) ac.add(cat);
+          if (cat.id == carId) {
+            if (!ac.any((cat) => cat.id == carId)) ac.add(cat);
           }
         });
       });
@@ -70,16 +73,30 @@ class MealProvider with ChangeNotifier {
     filters['vegan'] = prefs.getBool('vegan') ?? false;
     filters['vegetarian'] = prefs.getBool('vegetarian') ?? false;
 
+
+    setFilters();
+
+
     prefsMealId = prefs.getStringList('prefsMealId') ?? [];
     for (var mealId in prefsMealId) {
-
-      final existingIndex = favoriteMeals.indexWhere((meal) => meal.id == mealId);
+      final existingIndex =
+          favoriteMeals.indexWhere((meal) => meal.id == mealId);
       if (existingIndex < 0) {
         favoriteMeals.add(DUMMY_MEALS.firstWhere((meal) => meal.id == mealId));
 
         //لو العنصر موجود في List سيتم نقله الي قائمه المفضله
       }
     }
+
+
+    List<Meal> fm = [];
+    favoriteMeals.forEach((favMeals) {
+      availableMeal.forEach((avMeal) {
+        if (favMeals.id == avMeal.id) fm.add(favMeals);
+      });
+    });
+    favoriteMeals = fm;
+
     notifyListeners();
   }
 
@@ -106,5 +123,4 @@ class MealProvider with ChangeNotifier {
   bool isFavorites(String mealId) {
     return favoriteMeals.any((meal) => meal.id == mealId);
   }
-
 }

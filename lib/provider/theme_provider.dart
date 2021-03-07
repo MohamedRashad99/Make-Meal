@@ -3,7 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider with ChangeNotifier {
   var primaryColor = Colors.pink;
-  var accentColor = Colors.pinkAccent.withOpacity(0.6);
+  var accentColor = Colors.amber;
 
   var tm = ThemeMode.system;
   String themeText = "s";
@@ -12,6 +12,7 @@ class ThemeProvider with ChangeNotifier {
     n == 1
         ? primaryColor = _toMaterialColor(newColor.hashCode)
         : accentColor = _toMaterialColor(newColor.hashCode);
+    notifyListeners();
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setInt("primaryColor", primaryColor.value);
     prefs.setInt("accentColor", accentColor.value);
@@ -19,7 +20,7 @@ class ThemeProvider with ChangeNotifier {
   getThemeColor() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
     primaryColor =  _toMaterialColor(prefs.getInt("primaryColor") ?? 0xFFE91E63);
-    accentColor =  _toMaterialColor(prefs.getInt("accentColor") ?? 0xFFFF4081);
+    accentColor =  _toMaterialColor(prefs.getInt("accentColor") ?? 0xFFFFC107);
     notifyListeners();
   }
 

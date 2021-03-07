@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:meal_app/provider/meal_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../provider/meal_provider.dart';
 import '../widgets/category_item.dart';
 import '../widgets/main_drawer.dart';
-import '../dummy_data.dart';
 
 class CategoriesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('Meal App'),
-      // ),
       drawer: MainDrawer(),
       body: GridView(
         padding: EdgeInsets.all(16),

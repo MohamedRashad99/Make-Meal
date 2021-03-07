@@ -1,82 +1,86 @@
 import 'package:flutter/material.dart';
-import 'dart:io';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:meal_app/provider/language_provider.dart';
 import 'package:provider/provider.dart';
 
-import 'package:meal_app/provider/meal_provider.dart';
+import '../provider/language_provider.dart';
+import '../provider/meal_provider.dart';
 import '../dummy_data.dart';
 
-class MealDetailScreen extends StatelessWidget {
+class MealDetailScreen extends StatefulWidget {
   static const routeName = 'meal_detail';
 
-  Widget buildSelectionTitle(BuildContext ctx, String text) {
+  @override
+  _MealDetailScreenState createState() => _MealDetailScreenState();
+}
+
+class _MealDetailScreenState extends State<MealDetailScreen> {
+  Widget buildSectionTitle(BuildContext context, String text) {
     return Container(
-      margin: EdgeInsets.symmetric(vertical: 8),
-      child: Text(
-        text,
-        style: Theme.of(ctx).textTheme.headline1,
-      ),
+      margin: EdgeInsets.symmetric(vertical: 10),
+      child: Text(text, style: Theme.of(context).textTheme.headline6,textAlign: TextAlign.center,),
     );
   }
 
-  Widget buildContainer(Widget child , BuildContext context) {
-    bool isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+  Widget buildContainer(Widget child) {
+    bool isLandscape =
+        MediaQuery.of(context).orientation == Orientation.landscape;
     var dw = MediaQuery.of(context).size.width;
     var dh = MediaQuery.of(context).size.height;
-
     return Container(
       decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Colors.pink),
+        color: Colors.white70,
+        border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(10),
       ),
-      margin: EdgeInsets.all(10),
+      margin: EdgeInsets.all(15),
       padding: EdgeInsets.all(10),
-      height: isLandscape ? dw*0.5 : dw*0.25,
-      width: isLandscape ? ( dh*0.5-25 ) : dh,
+      height: isLandscape ? dh * 0.5 : dh * 0.25,
+      width: isLandscape ? (dw * 0.5 - 30) : dw,
       child: child,
     );
   }
 
+  String mealId;
+
+  @override
+  void didChangeDependencies() {
+    mealId = ModalRoute.of(context).settings.arguments as String;
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
-    var lan = Provider.of<LanguageProvider>(context, listen: true);
-
     bool isLandscape =
         MediaQuery.of(context).orientation == Orientation.landscape;
-
-    var accentColor = Theme.of(context).accentColor.withOpacity(0.2);
-
-    final mealId = ModalRoute.of(context).settings.arguments as String;
     final selectedMeal = DUMMY_MEALS.firstWhere((meal) => meal.id == mealId);
-    // if id meal that come from categories meal is equal filtering meal that i has it
+    var accentColor = Theme.of(context).accentColor;
+    var lan = Provider.of<LanguageProvider>(context, listen: true);
 
-    List<String > stepsLi = lan.getTexts('steps-$mealId') as List<String >;
+    List<String> stepsLi = lan.getTexts('steps-$mealId') as List<String>;
     var liSteps = ListView.builder(
+      padding: EdgeInsets.all(0),
       itemBuilder: (ctx, index) => Column(
         children: [
           ListTile(
             leading: CircleAvatar(
-              child: Text('#${index + 1}'),
+              child: Text("# ${index + 1}"),
             ),
             title: Text(
               stepsLi[index],
               style: TextStyle(color: Colors.black),
             ),
           ),
-          Divider(
-            color: Colors.black26,
-          ),
+          Divider(),
         ],
       ),
       itemCount: stepsLi.length,
     );
-    List<String>liIngredientLi =
+    List<String> liIngredientLi =
         lan.getTexts('ingredients-$mealId') as List<String>;
     var liIngredients = ListView.builder(
+      padding: EdgeInsets.all(0),
       itemBuilder: (ctx, index) => Card(
-        color: accentColor,
+        color: accentColor.withOpacity(0.6),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
           child: Text(
@@ -91,68 +95,74 @@ class MealDetailScreen extends StatelessWidget {
       itemCount: liIngredientLi.length,
     );
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(lan.getTexts("meal-$mealId"))
-      ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              margin: EdgeInsets.all(10),
-              height: 300,
-              width: double.infinity,
-              child: ClipRRect(
-                borderRadius: BorderRadius.only(
-                  topRight: Radius.circular(15),
-                  topLeft: Radius.circular(15),
-                ),
-                child: Hero(
+    return Directionality(
+      textDirection: lan.isEn ? TextDirection.ltr : TextDirection.rtl,
+      child: Scaffold(
+        body: CustomScrollView(
+          slivers: [
+            SliverAppBar(
+              expandedHeight: 300,
+              pinned: true,
+              flexibleSpace: FlexibleSpaceBar(
+                title: Text(lan.getTexts('meal-$mealId')),
+                background: Hero(
                   tag: mealId,
-                  child: Image.network(
-                    selectedMeal.imageUrl,
-                    fit: BoxFit.cover,
+                  child: InteractiveViewer(
+                    child: FadeInImage(
+                        placeholder: AssetImage('assets/images/a2.png'),
+                        image: NetworkImage(
+                          selectedMeal.imageUrl,
+                        ),
+                        fit: BoxFit.cover),
                   ),
                 ),
               ),
             ),
-            if(isLandscape)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Column(
-                  children: [
-                    buildSelectionTitle(context, 'ingredients'),
-                    buildContainer(liIngredients ,context),
-                  ],
-                ),
-                Column(
-                  children: [
-                    buildSelectionTitle(context, 'Steps'),
-                    buildContainer(liSteps,context),
-                  ],
-                ),
-              ],
+            SliverList(
+              delegate: SliverChildListDelegate(
+                [
+                  if (isLandscape)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            buildSectionTitle(
+                                context, lan.getTexts('Ingredients')),
+                            buildContainer(liIngredients),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            buildSectionTitle(context, lan.getTexts('Steps')),
+                            buildContainer(liSteps),
+                          ],
+                        ),
+                      ],
+                    ),
+                  if (!isLandscape)
+                    buildSectionTitle(context, lan.getTexts('Ingredients')),
+                  if (!isLandscape) buildContainer(liIngredients),
+                  if (!isLandscape)
+                    buildSectionTitle(context, lan.getTexts('Steps')),
+                  if (!isLandscape) buildContainer(liSteps),
+                  //SizedBox(height: 700,),
+                ],
+              ),
             ),
-            if(!isLandscape) buildSelectionTitle(context, 'ingredients'),
-            if(!isLandscape) buildContainer(liIngredients,context),
-
-            if(!isLandscape)buildSelectionTitle(context, 'Steps'),
-            if(!isLandscape) buildContainer(liSteps,context),
-
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        // howa 3waz ydelete item f b3atlo mealId w mealId Gay mn meal item -->
-        onPressed: () => Provider.of<MealProvider>(context, listen: false)
-            .toggalFavorites(mealId),
-        //star icon هل هو في خانه ال favorites ولا لا
-        child: Icon(
-            Provider.of<MealProvider>(context, listen: true).isFavorites(mealId)
-                ? Icons.star
-                : Icons.star_border),
-        backgroundColor: Theme.of(context).primaryColor,
+        floatingActionButton: FloatingActionButton(
+          // howa 3waz ydelete item f b3atlo mealId w mealId Gay mn meal item -->
+          onPressed: () => Provider.of<MealProvider>(context, listen: false)
+              .toggalFavorites(mealId),
+          //star icon هل هو في خانه ال favorites ولا لا
+          child: Icon(Provider.of<MealProvider>(context, listen: true)
+                  .isFavorites(mealId)
+              ? Icons.star
+              : Icons.star_border),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
       ),
     );
   }

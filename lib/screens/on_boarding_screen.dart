@@ -113,7 +113,8 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     Navigator.of(ctx)
                         .pushReplacementNamed(TabsScreen.routeName);
 
-                    SharedPreferences prefs = await SharedPreferences.getInstance();
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
                     prefs.setBool('watched', true);
                   },
                 ),
